@@ -1,18 +1,22 @@
 # Audinspect
 
-An audio inspector. Made for quick viewing of audio files. Built with Electron + React
+An audio inspector. Made for quick viewing of audio files. Built with Electron + React and wavesurfer.js
 
-**YOU MUST HAVE FFMPEG INSTALLED IN CASE SOME AUDIO FILES DON'T WORK**
+**YOU MUST HAVE FFMPEG INSTALLED IN CASE SOME AUDIO FILES DON'T WORK.**
+
+**I AM NOT RESPONSIBLE FOR ERRORS CAUSED BY NOT HAVING FFMPEG INSTALLED.**
 
 ## Features
 
 - Scrollwheel scrubbing
 - Waveform view
-- Quick file viewing
+- Quick audio file viewing
 
 ## Who is this for?
 
 This is for music producers, A&R Teams, labels, reviewers, and people who want to quickly inspect music.
+
+This implies you already have FFmpeg installed.
 
 ## Getting Started with Developing
 
