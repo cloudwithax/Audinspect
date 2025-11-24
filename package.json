@@ -59,6 +59,9 @@
       ]
     },
     "linux": {
+      "target": [
+        "AppImage"
+      ],
       "files": [
         "!**/node_modules/ffmpeg-static/ffmpeg.exe"
       ]
