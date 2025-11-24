@@ -150,6 +150,20 @@ ipcMain.handle('file:decodeToWav', async (_event, filePath) => {
   try {
     ffmpegPath = require('ffmpeg-static');
 
+    // If ffmpeg-static returns null in packaged app, manually construct the path
+    if (!ffmpegPath && app.isPackaged) {
+      const platform = process.platform;
+      const ext = platform === 'win32' ? '.exe' : '';
+      const binaryName = `ffmpeg${ext}`;
+
+      // In packaged apps, use process.resourcesPath which points to the resources directory
+      // e.g., C:\Users\...\AppData\Local\Programs\audinspect\resources
+      const resourcesPath = process.resourcesPath;
+      ffmpegPath = path.join(resourcesPath, 'app.asar.unpacked', 'node_modules', 'ffmpeg-static', binaryName);
+
+      console.log('Manually constructed FFmpeg path:', ffmpegPath);
+    }
+
     // Check if ffmpeg-static returned a valid path
     if (!ffmpegPath) throw new Error('ffmpeg-static returned null path');
 
