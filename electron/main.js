@@ -150,30 +150,33 @@ ipcMain.handle('file:decodeToWav', async (_event, filePath) => {
   try {
     ffmpegPath = require('ffmpeg-static');
 
-    // If ffmpeg-static returns null in packaged app, manually construct the path
-    if (!ffmpegPath && app.isPackaged) {
-      const platform = process.platform;
-      const ext = platform === 'win32' ? '.exe' : '';
-      const binaryName = `ffmpeg${ext}`;
+    console.log('FFmpeg path from require:', ffmpegPath);
+    console.log('App is packaged:', app.isPackaged);
+    console.log('Process resources path:', process.resourcesPath);
 
-      // In packaged apps, use process.resourcesPath which points to the resources directory
-      // e.g., C:\Users\...\AppData\Local\Programs\audinspect\resources
-      const resourcesPath = process.resourcesPath;
-      ffmpegPath = path.join(resourcesPath, 'app.asar.unpacked', 'node_modules', 'ffmpeg-static', binaryName);
+    // In packaged apps, ffmpeg-static might return a path inside app.asar
+    // We need to replace app.asar with app.asar.unpacked
+    if (app.isPackaged) {
+      if (ffmpegPath && ffmpegPath.includes('app.asar')) {
+        // Replace only the first occurrence of 'app.asar' with 'app.asar.unpacked'
+        ffmpegPath = ffmpegPath.replace(/app\.asar(?!\.unpacked)/, 'app.asar.unpacked');
+        console.log('Replaced app.asar with app.asar.unpacked:', ffmpegPath);
+      } else if (!ffmpegPath) {
+        // If ffmpeg-static returns null, manually construct the path
+        const platform = process.platform;
+        const ext = platform === 'win32' ? '.exe' : '';
+        const binaryName = `ffmpeg${ext}`;
 
-      console.log('Manually constructed FFmpeg path:', ffmpegPath);
+        const resourcesPath = process.resourcesPath;
+        ffmpegPath = path.join(resourcesPath, 'app.asar.unpacked', 'node_modules', 'ffmpeg-static', binaryName);
+        console.log('Manually constructed FFmpeg path:', ffmpegPath);
+      }
     }
 
-    // Check if ffmpeg-static returned a valid path
-    if (!ffmpegPath) throw new Error('ffmpeg-static returned null path');
+    // Final check
+    if (!ffmpegPath) throw new Error('ffmpeg-static returned null path and could not construct fallback');
 
-    // Fix for Electron packaging: replace app.asar with app.asar.unpacked
-    // This is required because spawn() cannot execute binaries inside the ASAR archive
-    if (app.isPackaged && ffmpegPath.includes('app.asar')) {
-      ffmpegPath = ffmpegPath.replace('app.asar', 'app.asar.unpacked');
-    }
-
-    console.log('FFmpeg path resolved to:', ffmpegPath);
+    console.log('Final FFmpeg path:', ffmpegPath);
   } catch (e) {
     console.error('Failed to resolve ffmpeg-static path:', e);
     return { data: null, error: `Failed to resolve ffmpeg path: ${e.message}`, code: null };
