@@ -450,24 +450,6 @@ export default function AudioPlayer() {
 
   const handleSearchChange = (value) => {
     setSearchQuery(value);
-    const q = (value || "").toLowerCase().trim();
-    if (!q) return;
-    if (currentIndex >= 0 && files[currentIndex]) {
-      const filePath = files[currentIndex];
-      const originalName = originalNamesRef.current[filePath];
-      const displayName = (originalName || (filePath || "").split(/[\/\\]/).pop()).toLowerCase();
-      if (!displayName.includes(q)) {
-        if (wsRef.current) {
-          try {
-            wsRef.current.pause && wsRef.current.pause();
-          } catch (e) { }
-        }
-        setCurrentIndex(-1);
-        isPlayingRef.current = false;
-        setIsPlaying(false);
-        setIsLoaded(false);
-      }
-    }
   };
 
   const preloadMetadataForInitialSort = async (paths) => {
