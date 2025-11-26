@@ -26,12 +26,19 @@ async function collectAudioFiles(dir) {
 }
 
 function createWindow() {
+  const isMac = process.platform === 'darwin';
+  
   const mainWindow = new BrowserWindow({
     width: 1000,
     height: 800,
     minWidth: 800,
     minHeight: 600,
     frame: false,
+    // On macOS, use hiddenInset to get native traffic light buttons
+    ...(isMac && {
+      titleBarStyle: 'hiddenInset',
+      trafficLightPosition: { x: 16, y: 7 },
+    }),
     icon: path.join(__dirname, '../resources/icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -48,6 +55,15 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
   }
+
+  // Track fullscreen state for macOS traffic light spacer
+  mainWindow.on('enter-full-screen', () => {
+    mainWindow.webContents.send('window:fullscreen-change', true);
+  });
+  mainWindow.on('leave-full-screen', () => {
+    mainWindow.webContents.send('window:fullscreen-change', false);
+  });
+
   return mainWindow;
 }
 
@@ -71,7 +87,12 @@ ipcMain.handle('dialog:openFolder', async () => {
 });
 
 ipcMain.handle('dialog:openFiles', async () => {
-  const result = await dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] });
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile', 'multiSelections'],
+    filters: [
+      { name: 'Audio Files', extensions: ['mp3', 'wav', 'flac', 'm4a', 'aac', 'ogg'] },
+    ],
+  });
   if (result.canceled || !result.filePaths || result.filePaths.length === 0) return [];
   return result.filePaths;
 });
