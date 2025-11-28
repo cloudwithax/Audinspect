@@ -502,7 +502,13 @@ ipcMain.handle("window:close", (event) => {
 });
 
 ipcMain.handle("shell:openExternal", async (_event, url) => {
-  if (!url || typeof url !== "string") return;
+  if (
+    !url ||
+    typeof url !== "string" ||
+    !/^https?:\/\//i.test(url)
+  ) {
+    return;
+  }
   await shell.openExternal(url);
 });
 
