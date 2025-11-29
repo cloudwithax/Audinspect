@@ -41,6 +41,14 @@ jobs:
           node-version: 22
           cache: "npm"
 
+      - name: Setup Python for node-gyp
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install setuptools (provides distutils for Python 3.12+)
+        run: pip install setuptools
+
       - name: Install Dependencies
         run: npm install
 
