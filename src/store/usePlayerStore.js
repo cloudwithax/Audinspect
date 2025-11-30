@@ -81,6 +81,16 @@ try {
   }
 } catch (e) {}
 
+let initialPlayOnSeek = false;
+try {
+  if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
+    const savedPlayOnSeek = localStorage.getItem("playOnSeek");
+    if (savedPlayOnSeek !== null) {
+      initialPlayOnSeek = savedPlayOnSeek === "true";
+    }
+  }
+} catch (e) {}
+
 const usePlayerStore = create((set, get) => ({
   // core playback / selection
   files: [],
@@ -99,6 +109,7 @@ const usePlayerStore = create((set, get) => ({
   wavesurferShowHover: initialWavesurferShowHover,
   audioOutputDevice: initialAudioOutputDevice,
   preservePitch: initialPreservePitch,
+  playOnSeek: initialPlayOnSeek,
 
   // folder / playlist context
   folderTree: null,
@@ -187,6 +198,15 @@ const usePlayerStore = create((set, get) => ({
     try {
       if (typeof localStorage !== "undefined") {
         localStorage.setItem("preservePitch", val.toString());
+      }
+    } catch (e) {}
+  },
+  setPlayOnSeek: (enabled) => {
+    const val = Boolean(enabled);
+    set({ playOnSeek: val });
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem("playOnSeek", val.toString());
       }
     } catch (e) {}
   },

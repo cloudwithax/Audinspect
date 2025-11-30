@@ -43,6 +43,8 @@ export default function Settings({ isOpen, onClose }) {
   );
   const preservePitch = usePlayerStore((state) => state.preservePitch);
   const setPreservePitch = usePlayerStore((state) => state.setPreservePitch);
+  const playOnSeek = usePlayerStore((state) => state.playOnSeek);
+  const setPlayOnSeek = usePlayerStore((state) => state.setPlayOnSeek);
   const [audioDevices, setAudioDevices] = useState([]);
   const [activeTab, setActiveTab] = useState("general");
   const [rememberLastFolder, setRememberLastFolder] = useState(false);
@@ -409,6 +411,36 @@ export default function Settings({ isOpen, onClose }) {
                     When enabled, changing playback speed will not affect the pitch of the audio.
                   </p>
                 </div>
+
+                <div className="mt-24">
+                  <label className="flex items-center gap-5 cursor-pointer group">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={playOnSeek}
+                        onChange={(e) => setPlayOnSeek(e.target.checked)}
+                        className="sr-only"
+                      />
+                      <div
+                        className={`size-6 border-2 transition-all duration-200 ${
+                          playOnSeek
+                            ? "bg-[var(--accent-color)] border-[var(--accent-color)]"
+                            : "bg-pure-black border-white/40 group-hover:border-white"
+                        }`}
+                      >
+                        {playOnSeek && (
+                          <Check size={20} strokeWidth={2} />
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-white">
+                      Play when seeking
+                    </span>
+                  </label>
+                  <p className="mt-[1rem] text-sm text-white/40">
+                    When enabled, clicking on the waveform will start playback from that position.
+                  </p>
+                </div>
               </div>
             </div>
           )}
@@ -614,7 +646,7 @@ export default function Settings({ isOpen, onClose }) {
                 className="w-96 h-96 mb-16"
               />
               <h3 className="text-2xl font-bold text-white mb-8">Audinspect</h3>
-              <p className="text-white/60 mb-4">Version 2.1.0 (a)</p>
+              <p className="text-white/60 mb-4">Version 2.1.0</p>
               <p className="text-white/40 text-sm">Created by 404oops</p>
 
               <div className="flex gap-4 mt-6">

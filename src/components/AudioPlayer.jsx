@@ -77,6 +77,7 @@ export default function AudioPlayer() {
     wavesurferShowHover,
     audioOutputDevice,
     preservePitch,
+    playOnSeek,
   } = usePlayerStore();
 
   useEffect(() => {
@@ -202,7 +203,14 @@ export default function AudioPlayer() {
     }
 
     inst.on("interaction", () => {
-      if (inst.isPlaying()) inst.play();
+      const state = usePlayerStore.getState();
+      if (state.playOnSeek && !inst.isPlaying()) {
+        inst.play();
+        isPlayingRef.current = true;
+        setIsPlaying(true);
+      } else if (inst.isPlaying()) {
+        inst.play();
+      }
     });
     inst.on("audioprocess", () => {
       try {
@@ -1372,7 +1380,7 @@ export default function AudioPlayer() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [files, currentIndex, duration, time, nudgeAmount]);
+  }, [files, currentIndex, duration, time, nudgeAmount, isLoaded]);
 
   useEffect(() => {
     if (
